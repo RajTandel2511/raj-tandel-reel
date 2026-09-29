@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * REEL — design tokens.
+ *
+ * One fixed palette; the "theme" is the scene. Colors are stored as RGB
+ * channels so Tailwind opacity modifiers work (bg-bone/10), and each is also
+ * exposed as a ready color (var(--flame)) for SVG and inline styles.
+ *
+ * Everything sits in @layer base / @layer components so utilities always win
+ * the cascade — a component class can never silently override `hidden`.
+ */
+
+@layer base {
+  :root {
+    --void-rgb: 10 10 15;
+    --space-rgb: 15 15 22;
+    --panel-rgb: 20 20 27;
+    --line-rgb: 34 34 43;
+    --mist-rgb: 134 134 143; /* muted text on dark: 5.47:1 on void */
+    --bone-rgb: 237 236 229;
+    --ash-rgb: 94 91 85; /* muted text on bone: 5.71:1 */
+    --flame-rgb: 255 107 44; /* fills anywhere; text only on dark (6.95:1) */
+    --ember-rgb: 180 56 10; /* accent TEXT on light scenes: 5.05:1 on bone */
+    --ion-rgb: 139 233 253;
+    --leaf-rgb: 159 255 91;
+
+    --void: rgb(var(--void-rgb));
+    --space: rgb(var(--space-rgb));
+    --panel: rgb(var(--panel-rgb));
+    --line: rgb(var(--line-rgb));
+    --mist: rgb(var(--mist-rgb));
+    --bone: rgb(var(--bone-rgb));
+    --ash: rgb(var(--ash-rgb));
+    --flame: rgb(var(--flame-rgb));
+    --ember: rgb(var(--ember-rgb));
+    --ion: rgb(var(--ion-rgb));
+    --leaf: rgb(var(--leaf-rgb));
+
+    --font-display: "Anybody", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+    --gutter: 20px;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-snap: cubic-bezier(0.7, 0, 0.2, 1);
+
+    color-scheme: dark;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --gutter: 48px;
+    }
+  }
+
+  * {
+    min-width: 0;
+  }
+
+  html {
+    background: var(--void);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--void);
+    color: var(--bone);
+    font-family: var(--font-display);
+    font-stretch: 100%;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+  }
+
+  ::selection {
+    background: var(--flame);
+    color: var(--void);
+  }
+
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Heavy, extra-expanded display type. Width is a live axis: animate
+     font-stretch between 50% and 150% for the stretch-open effect. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-stretch: 150%;
+    line-height: 0.86;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+  }
+
+  /* Tiny corner-label type — the HUD voice of the whole site. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .gutter {
+    padding-inline: var(--gutter);
+  }
+
+  /* A full-bleed section. Scenes cut hard from one colour to the next. */
+  .scene {
+    position: relative;
+    padding-block: 96px;
+    padding-inline: var(--gutter);
+  }
+
+  @media (min-width: 768px) {
+    .scene {
+      padding-block: 144px;
+    }
+  }
+
+  /* Sharp, HUD-like controls. Colour comes from the scene via currentColor. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 14px 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1;
+    border: 1.5px solid currentColor;
+    transition: background-color 0.15s ease, color 0.15s ease,
+      transform 0.15s var(--ease-out);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn-solid {
+    background: currentColor;
+  }
+
+  /* Text inside a solid button must contrast with the fill, so the fill
+     colour and the label colour are set explicitly by the variant. */
+  .btn-void {
+    background: var(--void);
+    border-color: var(--void);
+    color: var(--bone);
+  }
+
+  .btn-void:hover {
+    background: transparent;
+    color: var(--void);
+  }
+
+  .btn-bone {
+    background: var(--bone);
+    border-color: var(--bone);
+    color: var(--void);
+  }
+
+  .btn-bone:hover {
+    background: transparent;
+    color: var(--bone);
+  }
+
+  .btn-line:hover {
+    background: rgb(var(--void-rgb) / 0.08);
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  }
+
+  .reveal.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}
